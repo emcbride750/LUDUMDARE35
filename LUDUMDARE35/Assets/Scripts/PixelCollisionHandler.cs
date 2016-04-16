@@ -9,7 +9,7 @@ public class PixelCollisionHandler : MonoBehaviour
     public static string StickyTag = "sticky";
     public static string DissolveTag = "dissolve";
     public static string UnbreakableTag = "unbreakable";
-    public float maxDistance = 2.82842712475f;
+    //public float maxDistance = 2.82842712475f;
     private static int maxConnectors = 4;
 
     private List<RelativeJoint2D> joints;
