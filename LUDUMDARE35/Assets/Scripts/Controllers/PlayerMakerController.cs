@@ -67,6 +67,9 @@ public class PlayerMakerController : MonoBehaviour {
 					//TODO: INSTANTIATE A PREFAB DUMMY
 					GameObject newPixel = Instantiate(pixelPrefab);
 
+					//Give it a name
+					newPixel.name = "Pixel " + i + "_" + j;
+
 					//Set it's position
 					newPixel.transform.localPosition = new Vector3(topLeft.x + i * PIXEL_WIDTH, topLeft.y + j * PIXEL_HEIGHT, 0);
 
