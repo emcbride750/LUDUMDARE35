@@ -1,0 +1,45 @@
+THE GAME
+The player controls a shape made of pixels, which is used to navigate a level.
+There are obstacles which can block or even CUT the shape!
+There are powerups and other effects to help you out!
+Once you manage to enter (and fit!) the end goal, you win the level!
+
+SCORING and LEVELS
+The "end goal" is a particular shape
+The player needs to get their shape to fit WITHIN the end goal shape
+The player earns points equal to the number of pixels they have when they finish the level
+	The more points, the more stars you 
+The player may retry levels in order to increase their score
+Levels are unlocked when the player earns enough points
+	Or enough stars
+
+
+Levels contain:
+A player shape, with a certain amount of pixels and affected by certain powerups.
+And end goal, with a certain amount of pixels
+
+Walls, optionally, throuought the level
+Cutters (knife or laser, or other things)
+Powerups, optionally, throuought the level
+
+
+
+
+
+Potential Powerups
+
+These apply to PIXELS
+
+NOCUT
+	Applies to joints and to pixels
+	Prevent the pixels/joints from being cut
+	
+	The starting pixel has this applied
+	The starting pixel's joints have this applied
+	The pixels surrounding the starting pixel have this applied
+
+STICKY
+	Applies to pixels
+	When sticky pixels touch pixels, a joint is created and the sticky effect is removed
+	
+
