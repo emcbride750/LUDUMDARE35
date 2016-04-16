@@ -21,8 +21,9 @@ public class KnifeController : MonoBehaviour
 
     private List<PixelCollisionHandler> touching;
 
-    void OnCollisionEnter2D(Collision2D coll)
+    void OnTriggerEnter2D(Collider2D coll)
     {
+		print(coll.gameObject.name);
         PixelCollisionHandler aPixel = coll.gameObject.GetComponent<PixelCollisionHandler>();
         if (aPixel != null)
         {
@@ -45,7 +46,7 @@ public class KnifeController : MonoBehaviour
         }
     }
 
-    void OnCollisionExit2D(Collision2D coll)
+    void OnTriggerExit2D(Collider2D coll)
     {
         PixelCollisionHandler aPixel = coll.gameObject.GetComponent<PixelCollisionHandler>();
         if (aPixel != null)
