@@ -54,14 +54,15 @@ public class PlayerController : MonoBehaviour, IPixelConnectionTarget
 
     private void Start()
     {
-        PixelCollisionHandler pch = GetComponent<PixelCollisionHandler>();
-        pixelBody = pch.GetComponent<Rigidbody2D>();
-        this.connectedPixels.Add(pch);
+        
     }
 
     private void Awake()
     {
         this.gameObject.tag = playerTag;
+        PixelCollisionHandler pch = GetComponent<PixelCollisionHandler>();
+        pixelBody = pch.GetComponent<Rigidbody2D>();
+        this.connectedPixels.Add(pch);
     }
 
     

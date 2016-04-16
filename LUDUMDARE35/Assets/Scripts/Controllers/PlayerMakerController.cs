@@ -22,7 +22,7 @@ public class PlayerMakerController : MonoBehaviour {
 	public ArrayList pixelColumns = new ArrayList();
 
 	// Use this for initialization
-	void Start () {
+	void Start() {
 
 		//Make all the pixels
 		this.MakePixels();

@@ -48,6 +48,10 @@ public class PixelCollisionHandler : MonoBehaviour
                     ExecuteEvents.Execute<IPixelConnectionTarget>(pc, null, (x, y) => x.AddPixel(ch));
                 }
             }
+            else
+            {
+                print("no player to add " + this.name + " to.");
+            }
         } else
         {
 			throw new Exception();
@@ -179,6 +183,9 @@ public class PixelCollisionHandler : MonoBehaviour
         if (pc != null)
         {
             ExecuteEvents.Execute<IPixelConnectionTarget>(pc, null, (x, y) => x.RemovePixel(this));
+        } else
+        {
+            print("no player to remove "+this.name+" from.");
         }
     }
 
