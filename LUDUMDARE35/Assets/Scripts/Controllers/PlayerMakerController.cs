@@ -67,6 +67,9 @@ public class PlayerMakerController : MonoBehaviour {
 					//TODO: INSTANTIATE A PREFAB DUMMY
 					GameObject newPixel = Instantiate(pixelPrefab);
 
+					//Give it a name
+					newPixel.name = "Pixel " + i + "_" + j;
+
 					//Set it's position
 					newPixel.transform.localPosition = new Vector3(topLeft.x + i * PIXEL_WIDTH, topLeft.y + j * PIXEL_HEIGHT, 0);
 
@@ -94,28 +97,74 @@ public class PlayerMakerController : MonoBehaviour {
 				PixelCollisionHandler pixelCollisionHandler = pixel.GetComponent<PixelCollisionHandler>();
 
 				//Get all 4 adjacent ones
-				//Left and right
-				for (int u = -1; u <= 1; ++u)
-				{
-					//Above and below
-					for (int v = -1; v <= 1; ++v)
-					{
-						//Try to get that pixel
-						try
-						{
-							//Get it, maybe?
-							GameObject adjacentPixel = (pixelColumns[i + u] as ArrayList)[j + v] as GameObject;
-							PixelCollisionHandler adjacentPixelCollisionHandler = adjacentPixel.GetComponent<PixelCollisionHandler>();
 
-							//Connect it
-							pixelCollisionHandler.AddJoint(adjacentPixelCollisionHandler);
-						}
-						catch
-						{
-							//We just pretend that didn't happen
-							print("WOOOPDO");
-						}
-					}
+				//Bottom
+				//Try to get that pixel
+				try
+				{
+					//Get it, maybe?
+					GameObject adjacentPixel = (pixelColumns[i] as ArrayList)[j - 1] as GameObject;
+					PixelCollisionHandler adjacentPixelCollisionHandler = adjacentPixel.GetComponent<PixelCollisionHandler>();
+
+					//Connect it
+					pixelCollisionHandler.AddJoint(adjacentPixelCollisionHandler);
+				}
+				catch
+				{
+					//We just pretend that didn't happen
+					print("Bottom Fail");
+				}
+
+				//Top
+				//Try to get that pixel
+				try
+				{
+					//Get it, maybe?
+					GameObject adjacentPixel = (pixelColumns[i] as ArrayList)[j + 1] as GameObject;
+					PixelCollisionHandler adjacentPixelCollisionHandler = adjacentPixel.GetComponent<PixelCollisionHandler>();
+
+					//Connect it
+					pixelCollisionHandler.AddJoint(adjacentPixelCollisionHandler);
+				}
+				catch
+				{
+					//We just pretend that didn't happen
+					print("Top Fail");
+				}
+
+				//Right
+				//Try to get that pixel
+				try
+				{
+					//Get it, maybe?
+					GameObject adjacentPixel = (pixelColumns[i - 1] as ArrayList)[j] as GameObject;
+					PixelCollisionHandler adjacentPixelCollisionHandler = adjacentPixel.GetComponent<PixelCollisionHandler>();
+
+					//Connect it
+					pixelCollisionHandler.AddJoint(adjacentPixelCollisionHandler);
+				}
+				catch
+				{
+					//We just pretend that didn't happen
+					print("Right Fail");
+				}
+
+				//Left
+				//Try to get that pixel
+				try
+				{
+					//Get it, maybe?
+					GameObject adjacentPixel = (pixelColumns[i + 1] as ArrayList)[j] as GameObject;
+					PixelCollisionHandler adjacentPixelCollisionHandler = adjacentPixel.GetComponent<PixelCollisionHandler>();
+
+					//Connect it
+					pixelCollisionHandler.AddJoint(adjacentPixelCollisionHandler);
+				}
+				catch
+				{
+					//We just pretend that didn't happen
+					print("Left Fail");
+
 				}
 			}
 		}

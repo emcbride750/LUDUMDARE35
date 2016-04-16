@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class PixelCollisionHandler : MonoBehaviour
@@ -27,23 +28,23 @@ public class PixelCollisionHandler : MonoBehaviour
         }
     }
 
-    public bool AddJoint(PixelCollisionHandler ch)
+    public void AddJoint(PixelCollisionHandler ch)
     {
         //create new joint between both objects and add to internal list on both
-        if ((ch != null) && (this != ch) && (ch.Joints.Count < maxConnectors) && (this.Joints.Count < maxConnectors) && (!this.GetConnectedCollisionHandlers().Contains(ch)))
+        if ((ch != null) && (this != ch) && (ch.Joints.Count <= maxConnectors) && (this.Joints.Count <= maxConnectors) && (!this.GetConnectedCollisionHandlers().Contains(ch)))
         {
-            float dist = Vector2.Distance(this.transform.localPosition, ch.transform.localPosition);
-
+            //float dist = Vector2.Distance(this.transform.localPosition, ch.transform.localPosition);
             RelativeJoint2D dj = gameObject.AddComponent(typeof(RelativeJoint2D)) as RelativeJoint2D;
             dj.connectedBody = ch.GetComponent<Rigidbody2D>();
-            dj.autoConfigureOffset = true;
+            dj.autoConfigureOffset = false;
             dj.maxTorque = 900;
             this.joints.Add(dj);
             ch.joints.Add(dj);
-            return true;
+            //return true;
         } else
         {
-            return false;
+			throw new Exception();
+            //return false;
         }
     }
 
@@ -52,7 +53,7 @@ public class PixelCollisionHandler : MonoBehaviour
         foreach (RelativeJoint2D dj in this.joints)
         {
             PixelCollisionHandler ch1 = dj.connectedBody.GetComponentInParent(typeof(PixelCollisionHandler)) as PixelCollisionHandler;
-            if (this != ch1)
+            if (this == ch1)
             {
                 PixelCollisionHandler ch2 = dj.GetComponentInParent(typeof(PixelCollisionHandler)) as PixelCollisionHandler;
                 yield return ch2;
@@ -64,11 +65,11 @@ public class PixelCollisionHandler : MonoBehaviour
         }
     }
 
-    private static bool DestroyJoint(RelativeJoint2D dj, bool ignoreUnbreakable)
+    private static void DestroyJoint(RelativeJoint2D dj, bool ignoreUnbreakable)
     {
         if (dj != null)
         {
-            PixelCollisionHandler ch1 = dj.connectedBody.GetComponentInParent(typeof(PixelCollisionHandler)) as PixelCollisionHandler;
+            PixelCollisionHandler ch1 = dj.connectedBody.GetComponent(typeof(PixelCollisionHandler)) as PixelCollisionHandler;
             PixelCollisionHandler ch2 = dj.GetComponentInParent(typeof(PixelCollisionHandler)) as PixelCollisionHandler;
             if ((ch1 != null) && (ch2 != null))
             {
@@ -78,23 +79,23 @@ public class PixelCollisionHandler : MonoBehaviour
                     ch1.joints.Remove(dj);
                     ch2.joints.Remove(dj);
                     Destroy(dj);
-                    return true;
                 }
                 else
                 {
-                    return false;
+                    throw new Exception();
                 }
             }
             else
             {
-                return false;
+                throw new Exception();
             }
-        } return false;
+        }
+        throw new Exception();
     }
 
-    public static bool DestroyJoint(RelativeJoint2D dj)
+    public static void DestroyJoint(RelativeJoint2D dj)
     {
-        return DestroyJoint(dj, false);
+        DestroyJoint(dj, false);
     }
 
     public RelativeJoint2D GetJoint(PixelCollisionHandler ch)
@@ -158,9 +159,16 @@ public class PixelCollisionHandler : MonoBehaviour
     /// </summary>
     void OnDestroy()
     {
-        foreach (RelativeJoint2D dj in this.joints)
+        RelativeJoint2D[] l = new RelativeJoint2D[this.joints.Count];
+        this.joints.CopyTo(l);
+        foreach (RelativeJoint2D dj in l)
         {
-            DestroyJoint(dj, true);
+            try {
+                DestroyJoint(dj, true);
+            } catch
+            {
+                //ignore
+            }
         }
     }
 
