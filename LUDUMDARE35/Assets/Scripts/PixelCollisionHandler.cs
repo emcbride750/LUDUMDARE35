@@ -9,11 +9,16 @@ public class PixelCollisionHandler : MonoBehaviour
     public static string StickyTag = "sticky";
     public static string DissolveTag = "dissolve";
     public static string UnbreakableTag = "unbreakable";
+
+    public bool isControlledByPlayer = false;
+
+    public bool isPlayerPixel = false;
+
     //public float maxDistance = 2.82842712475f;
     private static int maxConnectors = 4;
-
+    
 	private List<RelativeJoint2D> joints = new List<RelativeJoint2D>();
-
+    
     public List<RelativeJoint2D> Joints
     {
         get
@@ -116,6 +121,10 @@ public class PixelCollisionHandler : MonoBehaviour
     void Start()
     {
         //joints = new List<RelativeJoint2D>();
+        PlayerController playerController = GetComponent<PlayerController>();
+        playerController.setOwningPixel(this); 
+        playerController.enabled = isControlledByPlayer;
+       
     }
 
     // Update is called once per frame
@@ -154,4 +163,35 @@ public class PixelCollisionHandler : MonoBehaviour
             DestroyJoint(dj, true);
         }
     }
+
+    public void addHorizontalForce(float force)
+    {
+        // This one is easy! apply the force to the current objet
+        Rigidbody2D body = GetComponent<Rigidbody2D>();
+
+        body.AddForce(new Vector2(force, 0));       
+    }
+
+    public void addVerticalForce(float force)
+    {
+        // This one is easy! apply the force to the current objet
+        Rigidbody2D body = GetComponent<Rigidbody2D>();
+
+        body.AddForce(new Vector2(0, force));
+    }
+
+    public void addRotationalForce(float force)
+    {
+        // Currently only the player pixel can rotate
+        if (!isPlayerPixel)
+        {
+            return;
+        }
+
+        // This one is easy! apply the force to the current objet
+        Rigidbody2D body = GetComponent<Rigidbody2D>();
+
+        body.AddTorque(force);
+    }
+
 }

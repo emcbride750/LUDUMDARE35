@@ -8,21 +8,21 @@ public class PlayerController : MonoBehaviour
     private string kRotationalAxisString = "Rotation";
     private string kVerticalAxisString = "Vertical";
 
-    private double kAxisAbsoluteMaximum = 1;
+    private float kAxisAbsoluteMaximum = 1;
 
-    public static double kHorizontalForceMaximum = 5;
-    public static double kVerticalForceMaximum = 5;
-    public static double kRotationalForceMaximum = 5;
+    public static float kHorizontalForceMaximum = 5;
+    public static float kVerticalForceMaximum = 5;
+    public static float kRotationalForceMaximum = 5;
 
 
-    private pixel parentPixel = null;
+    private PixelCollisionHandler parentPixel = null;
     
     private void Awake()
     {
 
     }
 
-    public void setOwningPixel(pixel owningPixel)
+    public void setOwningPixel(PixelCollisionHandler owningPixel)
     {
         parentPixel = owningPixel;
     }
