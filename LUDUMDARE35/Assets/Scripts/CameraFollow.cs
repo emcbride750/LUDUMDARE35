@@ -7,13 +7,11 @@ public class CameraFollow : MonoBehaviour {
     public float damping = 0.2f;
 
     public float m_OffsetZ;
-    private Vector3 m_LastTargetPosition;
     private Vector3 m_CurrentVelocity;
 
     // Use this for initialization
     private void Start()
     {
-        m_LastTargetPosition = target.position;
         m_OffsetZ = (transform.position - target.position).z;
         transform.parent = null;
     }
@@ -29,7 +27,5 @@ public class CameraFollow : MonoBehaviour {
 
 
         transform.position = midPos + (Vector3.forward * m_OffsetZ);
-
-        m_LastTargetPosition = target.position;
     }
 }
