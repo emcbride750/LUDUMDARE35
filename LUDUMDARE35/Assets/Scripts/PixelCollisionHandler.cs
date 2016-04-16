@@ -25,7 +25,7 @@ public class PixelCollisionHandler : MonoBehaviour
     public bool AddJoint(PixelCollisionHandler ch)
     {
         //create new joint between both objects and add to internal list on both
-        if ((ch != null) && (ch.Joints.Count < maxConnectors) && (this.Joints.Count < maxConnectors) && (!this.GetConnectedCollisionHandlers().Contains(ch)))
+        if ((ch != null) && (this != ch) && (ch.Joints.Count < maxConnectors) && (this.Joints.Count < maxConnectors) && (!this.GetConnectedCollisionHandlers().Contains(ch)))
         {
             float dist = Vector2.Distance(this.transform.localPosition, ch.transform.localPosition);
 
