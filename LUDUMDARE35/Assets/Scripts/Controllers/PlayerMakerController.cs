@@ -90,7 +90,8 @@ public class PlayerMakerController : MonoBehaviour {
 			{
 				//We're looking at a pixel
 				//Try to connect all 4 adjacent ones
-				PixelCollisionHandler pixel = (pixelColumns[i] as ArrayList)[j] as PixelCollisionHandler;
+				GameObject pixel = (pixelColumns[i] as ArrayList)[j] as GameObject;
+				PixelCollisionHandler pixelCollisionHandler = pixel.GetComponent<PixelCollisionHandler>();
 
 				//Get all 4 adjacent ones
 				//Left and right
@@ -103,10 +104,11 @@ public class PlayerMakerController : MonoBehaviour {
 						try
 						{
 							//Get it, maybe?
-							PixelCollisionHandler adjacentPixel = (pixelColumns[i + u] as ArrayList)[j + v] as PixelCollisionHandler;
+							GameObject adjacentPixel = (pixelColumns[i + u] as ArrayList)[j + v] as GameObject;
+							PixelCollisionHandler adjacentPixelCollisionHandler = adjacentPixel.GetComponent<PixelCollisionHandler>();
 
 							//Connect it
-							pixel.AddJoint(adjacentPixel);
+							pixelCollisionHandler.AddJoint(adjacentPixelCollisionHandler);
 						}
 						catch
 						{

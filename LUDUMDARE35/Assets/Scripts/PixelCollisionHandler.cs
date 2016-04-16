@@ -12,7 +12,7 @@ public class PixelCollisionHandler : MonoBehaviour
     public float maxDistance = 2.82842712475f;
     private static int maxConnectors = 4;
 
-    private List<RelativeJoint2D> joints;
+	private List<RelativeJoint2D> joints = new List<RelativeJoint2D>();
 
     public List<RelativeJoint2D> Joints
     {
@@ -115,7 +115,7 @@ public class PixelCollisionHandler : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        joints = new List<RelativeJoint2D>();
+        //joints = new List<RelativeJoint2D>();
     }
 
     // Update is called once per frame
