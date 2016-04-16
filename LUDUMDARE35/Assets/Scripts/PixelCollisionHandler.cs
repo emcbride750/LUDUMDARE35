@@ -60,7 +60,7 @@ public class PixelCollisionHandler : MonoBehaviour
         }
     }
 
-    private static bool DestroyJoint(RelativeJoint2D dj, bool ignoreUnbreakable)
+    private static void DestroyJoint(RelativeJoint2D dj, bool ignoreUnbreakable)
     {
         if (dj != null)
         {
@@ -74,23 +74,23 @@ public class PixelCollisionHandler : MonoBehaviour
                     ch1.joints.Remove(dj);
                     ch2.joints.Remove(dj);
                     Destroy(dj);
-                    return true;
                 }
                 else
                 {
-                    return false;
+                    throw new Exception();
                 }
             }
             else
             {
-                return false;
+                throw new Exception();
             }
-        } return false;
+        }
+        throw new Exception();
     }
 
-    public static bool DestroyJoint(RelativeJoint2D dj)
+    public static void DestroyJoint(RelativeJoint2D dj)
     {
-        return DestroyJoint(dj, false);
+        DestroyJoint(dj, false);
     }
 
     public RelativeJoint2D GetJoint(PixelCollisionHandler ch)
@@ -150,9 +150,16 @@ public class PixelCollisionHandler : MonoBehaviour
     /// </summary>
     void OnDestroy()
     {
-        foreach (RelativeJoint2D dj in this.joints)
+        RelativeJoint2D[] l = new RelativeJoint2D[this.joints.Count];
+        this.joints.CopyTo(l);
+        foreach (RelativeJoint2D dj in l)
         {
-            DestroyJoint(dj, true);
+            try {
+                DestroyJoint(dj, true);
+            } catch
+            {
+                //ignore
+            }
         }
     }
 }
