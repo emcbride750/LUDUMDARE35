@@ -12,9 +12,9 @@ public class PixelCollisionHandler : MonoBehaviour
     public float maxDistance = 2.82842712475f;
     private static int maxConnectors = 4;
 
-    private List<SpringJoint2D> joints;
+    private List<RelativeJoint2D> joints;
 
-    public List<SpringJoint2D> Joints
+    public List<RelativeJoint2D> Joints
     {
         get
         {
@@ -29,11 +29,10 @@ public class PixelCollisionHandler : MonoBehaviour
         {
             float dist = Vector2.Distance(this.transform.localPosition, ch.transform.localPosition);
 
-            SpringJoint2D dj = gameObject.AddComponent(typeof(SpringJoint2D)) as SpringJoint2D;
+            RelativeJoint2D dj = gameObject.AddComponent(typeof(RelativeJoint2D)) as RelativeJoint2D;
             dj.connectedBody = ch.GetComponent<Rigidbody2D>();
-            dj.distance = Mathf.Min(dist, maxDistance);
-            dj.dampingRatio = 0.9f;
-            dj.frequency = 900000.0f;
+            dj.autoConfigureOffset = true;
+            dj.maxTorque = 900;
             this.joints.Add(dj);
             ch.joints.Add(dj);
             return true;
@@ -45,7 +44,7 @@ public class PixelCollisionHandler : MonoBehaviour
 
     public IEnumerable<PixelCollisionHandler> GetConnectedCollisionHandlers()
     {
-        foreach (SpringJoint2D dj in this.joints)
+        foreach (RelativeJoint2D dj in this.joints)
         {
             PixelCollisionHandler ch1 = dj.connectedBody.GetComponentInParent(typeof(PixelCollisionHandler)) as PixelCollisionHandler;
             if (this != ch1)
@@ -60,7 +59,7 @@ public class PixelCollisionHandler : MonoBehaviour
         }
     }
 
-    private static bool DestroyJoint(SpringJoint2D dj, bool ignoreUnbreakable)
+    private static bool DestroyJoint(RelativeJoint2D dj, bool ignoreUnbreakable)
     {
         if (dj != null)
         {
@@ -88,12 +87,12 @@ public class PixelCollisionHandler : MonoBehaviour
         } return false;
     }
 
-    public static bool DestroyJoint(SpringJoint2D dj)
+    public static bool DestroyJoint(RelativeJoint2D dj)
     {
         return DestroyJoint(dj, false);
     }
 
-    public SpringJoint2D GetJoint(PixelCollisionHandler ch)
+    public RelativeJoint2D GetJoint(PixelCollisionHandler ch)
     {
         if ((ch != null) && (this != ch))
         {
@@ -116,7 +115,7 @@ public class PixelCollisionHandler : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        joints = new List<SpringJoint2D>();
+        joints = new List<RelativeJoint2D>();
     }
 
     // Update is called once per frame
@@ -150,7 +149,7 @@ public class PixelCollisionHandler : MonoBehaviour
     /// </summary>
     void OnDestroy()
     {
-        foreach (SpringJoint2D dj in this.joints)
+        foreach (RelativeJoint2D dj in this.joints)
         {
             DestroyJoint(dj, true);
         }
