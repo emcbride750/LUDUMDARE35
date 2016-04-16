@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class PixelCollisionHandler : MonoBehaviour
@@ -35,6 +36,18 @@ public class PixelCollisionHandler : MonoBehaviour
             //dj.maxTorque = 900;
             this.joints.Add(dj);
             ch.joints.Add(dj);
+
+            //tell player that we are connected
+            GameObject pc = PlayerController.getPlayer();
+            if (pc != null)
+            {
+                PlayerController pco = pc.GetComponent<PlayerController>();
+                if (pco.isConnectedTo(ch) || pco.isConnectedTo(this))
+                {
+                    ExecuteEvents.Execute<IPixelConnectionTarget>(pc, null, (x, y) => x.AddPixel(this));
+                    ExecuteEvents.Execute<IPixelConnectionTarget>(pc, null, (x, y) => x.AddPixel(ch));
+                }
+            }
         } else
         {
 			throw new Exception();
@@ -72,7 +85,8 @@ public class PixelCollisionHandler : MonoBehaviour
                     ch1.joints.Remove(dj);
                     ch2.joints.Remove(dj);
                     Destroy(dj);
-                    print("Destroy joint "+ch1.name+" <-> "+ch2.name);
+
+                    //TODO: remove pixels on player object
                 }
                 else
                 {
@@ -115,7 +129,7 @@ public class PixelCollisionHandler : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-
+        
     }
 
     // Update is called once per frame
@@ -160,7 +174,12 @@ public class PixelCollisionHandler : MonoBehaviour
                 //ignore
             }
         }
-        print("Destroy pixel " + this.name);
+        //tell player that we are not connected
+        GameObject pc = PlayerController.getPlayer();
+        if (pc != null)
+        {
+            ExecuteEvents.Execute<IPixelConnectionTarget>(pc, null, (x, y) => x.RemovePixel(this));
+        }
     }
 
 

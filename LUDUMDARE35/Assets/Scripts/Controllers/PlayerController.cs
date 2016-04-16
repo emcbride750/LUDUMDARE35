@@ -1,10 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+
+public interface IPixelConnectionTarget : IEventSystemHandler
+{
+    void AddPixel(PixelCollisionHandler px);
+    void RemovePixel(PixelCollisionHandler px);
+}
 
 [RequireComponent(typeof(PixelCollisionHandler))]
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IPixelConnectionTarget
 {
+    public static string playerTag = "Player";
     private string kHorizontalAxisString = "Horizontal";
     private string kRotationalAxisString = "Rotation";
     private string kVerticalAxisString = "Vertical";
@@ -15,16 +23,45 @@ public class PlayerController : MonoBehaviour
     public static float kVerticalForceMaximum = 5;
     public static float kRotationalForceMaximum = 5;
 
+
+    public static GameObject getPlayer()
+    {
+        try {
+            return GameObject.FindGameObjectWithTag(playerTag);
+        } catch
+        {
+            print("couldn't find player");
+            return null;
+        }
+    }
+
+    public int connectedPixelsCount
+    {
+        get
+        {
+            return this.connectedPixels.Count;
+        }
+    }
+
+    private List<PixelCollisionHandler> connectedPixels = new List<PixelCollisionHandler>();
+
+    public bool isConnectedTo(PixelCollisionHandler pch)
+    {
+        return this.connectedPixels.Contains(pch);
+    }
+
     private Rigidbody2D pixelBody;
 
     private void Start()
     {
-        pixelBody = GetComponent<PixelCollisionHandler>().GetComponent<Rigidbody2D>();
+        PixelCollisionHandler pch = GetComponent<PixelCollisionHandler>();
+        pixelBody = pch.GetComponent<Rigidbody2D>();
+        this.connectedPixels.Add(pch);
     }
 
     private void Awake()
     {
-
+        this.gameObject.tag = playerTag;
     }
 
     
@@ -43,9 +80,9 @@ public class PlayerController : MonoBehaviour
         var rotationValue = Input.GetAxis(kRotationalAxisString);
 
         // Now we can use these values to apply a force value to the pixel that we own
-        var horizontalForce = kHorizontalForceMaximum * (horizontalValue / kAxisAbsoluteMaximum);
-        var verticalForce = kVerticalForceMaximum * (verticalValue / kAxisAbsoluteMaximum);
-        var rotationalForce = kRotationalForceMaximum * (rotationValue / kAxisAbsoluteMaximum);
+        var horizontalForce = kHorizontalForceMaximum * (horizontalValue / kAxisAbsoluteMaximum) * connectedPixelsCount;
+        var verticalForce = kVerticalForceMaximum * (verticalValue / kAxisAbsoluteMaximum) * connectedPixelsCount;
+        var rotationalForce = kRotationalForceMaximum * (rotationValue / kAxisAbsoluteMaximum) * connectedPixelsCount;
 
         this.addHorizontalForce(horizontalForce);
         this.addVerticalForce(verticalForce);
@@ -74,5 +111,20 @@ public class PlayerController : MonoBehaviour
     {
         // This one is easy! apply the force to the current objet
         pixelBody.AddTorque(force);
+    }
+
+    void IPixelConnectionTarget.AddPixel(PixelCollisionHandler px)
+    {
+        if (!connectedPixels.Contains(px))
+        {
+            connectedPixels.Add(px);
+            print("connected to player: "+px.name);
+        }
+    }
+
+    void IPixelConnectionTarget.RemovePixel(PixelCollisionHandler px)
+    {
+        connectedPixels.Remove(px);
+        print("removed from player: " + px.name);
     }
 }

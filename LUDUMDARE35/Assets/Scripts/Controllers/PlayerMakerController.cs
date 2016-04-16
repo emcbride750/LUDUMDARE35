@@ -166,7 +166,7 @@ public class PlayerMakerController : MonoBehaviour {
 					print("Left Fail");
 
 				}
-			}
+            }
 		}
 	}
 	// Update is called once per frame
