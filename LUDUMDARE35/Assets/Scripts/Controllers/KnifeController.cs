@@ -36,7 +36,12 @@ public class KnifeController : MonoBehaviour
                     break;
                 }
                 else {
-                    PixelCollisionHandler.DestroyJoint(aPixel.GetJoint(p));
+                    try {
+                        PixelCollisionHandler.DestroyJoint(aPixel.GetJoint(p));
+                    } catch
+                    {
+                        //ignore.
+                    }
                 }
             }
             if (!alreadyPresent)

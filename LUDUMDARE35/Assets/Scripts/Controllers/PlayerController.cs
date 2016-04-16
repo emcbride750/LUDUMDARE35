@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(PixelCollisionHandler))]
 public class PlayerController : MonoBehaviour
 {
     private string kHorizontalAxisString = "Horizontal";
@@ -14,23 +15,23 @@ public class PlayerController : MonoBehaviour
     public static float kVerticalForceMaximum = 5;
     public static float kRotationalForceMaximum = 5;
 
+    private Rigidbody2D pixelBody;
 
-    private PixelCollisionHandler parentPixel = null;
-    
+    private void Start()
+    {
+        pixelBody = GetComponent<PixelCollisionHandler>().GetComponent<Rigidbody2D>();
+    }
+
     private void Awake()
     {
 
     }
 
-    public void setOwningPixel(PixelCollisionHandler owningPixel)
-    {
-        parentPixel = owningPixel;
-    }
     
     private void Update()
     {
         // First of all, is this pixel alive?
-        if (parentPixel == null)
+        if (pixelBody == null)
         {
             // Do nothing, no owning pixel!
             // TODO: Should this be killed? I bet that when a pixel dies
@@ -46,13 +47,32 @@ public class PlayerController : MonoBehaviour
         var verticalForce = kVerticalForceMaximum * (verticalValue / kAxisAbsoluteMaximum);
         var rotationalForce = kRotationalForceMaximum * (rotationValue / kAxisAbsoluteMaximum);
 
-        parentPixel.addHorizontalForce(horizontalForce);
-        parentPixel.addVerticalForce(verticalForce);
-        parentPixel.addRotationalForce(rotationalForce);
+        this.addHorizontalForce(horizontalForce);
+        this.addVerticalForce(verticalForce);
+        this.addRotationalForce(rotationalForce);
     }
 
 
     private void FixedUpdate()
     {
+    }
+
+
+    public void addHorizontalForce(float force)
+    {
+        // This one is easy! apply the force to the current objet
+        pixelBody.AddForce(new Vector2(force, 0));
+    }
+
+    public void addVerticalForce(float force)
+    {
+        // This one is easy! apply the force to the current objet
+        pixelBody.AddForce(new Vector2(0, force));
+    }
+
+    public void addRotationalForce(float force)
+    {
+        // This one is easy! apply the force to the current objet
+        pixelBody.AddTorque(force);
     }
 }
