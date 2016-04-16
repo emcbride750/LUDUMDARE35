@@ -62,26 +62,30 @@ public class PixelCollisionHandler : MonoBehaviour
 
     private static bool DestroyJoint(SpringJoint2D dj, bool ignoreUnbreakable)
     {
-        PixelCollisionHandler ch1 = dj.connectedBody.GetComponentInParent(typeof(PixelCollisionHandler)) as PixelCollisionHandler;
-        PixelCollisionHandler ch2 = dj.GetComponentInParent(typeof(PixelCollisionHandler)) as PixelCollisionHandler;
-        if ((ch1 != null) && (ch2 != null))
+        if (dj != null)
         {
-            if (ignoreUnbreakable || (!string.Equals(ch1.tag, UnbreakableTag, System.StringComparison.InvariantCultureIgnoreCase) &&
-                (!string.Equals(ch2.tag, UnbreakableTag, System.StringComparison.InvariantCultureIgnoreCase)))){
-                ch1.joints.Remove(dj);
-                ch2.joints.Remove(dj);
-                Destroy(dj);
-                return true;
+            PixelCollisionHandler ch1 = dj.connectedBody.GetComponentInParent(typeof(PixelCollisionHandler)) as PixelCollisionHandler;
+            PixelCollisionHandler ch2 = dj.GetComponentInParent(typeof(PixelCollisionHandler)) as PixelCollisionHandler;
+            if ((ch1 != null) && (ch2 != null))
+            {
+                if (ignoreUnbreakable || (!string.Equals(ch1.tag, UnbreakableTag, System.StringComparison.InvariantCultureIgnoreCase) &&
+                    (!string.Equals(ch2.tag, UnbreakableTag, System.StringComparison.InvariantCultureIgnoreCase))))
+                {
+                    ch1.joints.Remove(dj);
+                    ch2.joints.Remove(dj);
+                    Destroy(dj);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             else
             {
                 return false;
             }
-        }
-        else
-        {
-            return false;
-        }
+        } return false;
     }
 
     public static bool DestroyJoint(SpringJoint2D dj)
@@ -91,7 +95,7 @@ public class PixelCollisionHandler : MonoBehaviour
 
     public SpringJoint2D GetJoint(PixelCollisionHandler ch)
     {
-        if (ch != null)
+        if ((ch != null) && (this != ch))
         {
             foreach (var j in this.joints)
             {
