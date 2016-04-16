@@ -18,9 +18,9 @@ public class KnifeController : MonoBehaviour {
 
     private List<PixelCollisionHandler> touching;
 
-    void OnCollisionEnter2D(Collider2D coll)
+    void OnCollisionEnter2D(Collision2D coll)
     {
-        PixelCollisionHandler aPixel = coll.GetComponent<PixelCollisionHandler>();
+        PixelCollisionHandler aPixel = coll.gameObject.GetComponent<PixelCollisionHandler>();
         if (aPixel != null)
         {
             if (!touching.Contains(aPixel))
@@ -32,13 +32,11 @@ public class KnifeController : MonoBehaviour {
                 touching.Add(aPixel);
             }
         }
-        
-        
     }
 
-    void OnCollisionExit2D(Collider2D coll)
+    void OnCollisionExit2D(Collision2D coll)
     {
-        PixelCollisionHandler aPixel = coll.GetComponent<PixelCollisionHandler>();
+        PixelCollisionHandler aPixel = coll.gameObject.GetComponent<PixelCollisionHandler>();
         if (aPixel != null)
         {
             touching.Remove(aPixel);
