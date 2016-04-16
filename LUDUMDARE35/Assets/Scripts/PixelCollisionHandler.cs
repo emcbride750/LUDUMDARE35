@@ -8,12 +8,13 @@ public class PixelCollisionHandler : MonoBehaviour
 {
     public static string StickyTag = "sticky";
     public static string DissolveTag = "dissolve";
+    public static string UnbreakableTag = "unbreakable";
     public float maxDistance = 2.82842712475f;
     private static int maxConnectors = 4;
 
-    private List<DistanceJoint2D> joints;
+    private List<SpringJoint2D> joints;
 
-    public List<DistanceJoint2D> Joints
+    public List<SpringJoint2D> Joints
     {
         get
         {
@@ -28,9 +29,11 @@ public class PixelCollisionHandler : MonoBehaviour
         {
             float dist = Vector2.Distance(this.transform.localPosition, ch.transform.localPosition);
 
-            DistanceJoint2D dj = gameObject.AddComponent(typeof(DistanceJoint2D)) as DistanceJoint2D;
+            SpringJoint2D dj = gameObject.AddComponent(typeof(SpringJoint2D)) as SpringJoint2D;
             dj.connectedBody = ch.GetComponent<Rigidbody2D>();
             dj.distance = Mathf.Min(dist, maxDistance);
+            dj.dampingRatio = 0.9f;
+            dj.frequency = 900000.0f;
             this.joints.Add(dj);
             ch.joints.Add(dj);
             return true;
@@ -42,7 +45,7 @@ public class PixelCollisionHandler : MonoBehaviour
 
     public IEnumerable<PixelCollisionHandler> GetConnectedCollisionHandlers()
     {
-        foreach (DistanceJoint2D dj in this.joints)
+        foreach (SpringJoint2D dj in this.joints)
         {
             PixelCollisionHandler ch1 = dj.connectedBody.GetComponentInParent(typeof(PixelCollisionHandler)) as PixelCollisionHandler;
             if (this != ch1)
@@ -57,23 +60,36 @@ public class PixelCollisionHandler : MonoBehaviour
         }
     }
 
-    public static bool DestroyJoint(DistanceJoint2D dj)
+    private static bool DestroyJoint(SpringJoint2D dj, bool ignoreUnbreakable)
     {
         PixelCollisionHandler ch1 = dj.connectedBody.GetComponentInParent(typeof(PixelCollisionHandler)) as PixelCollisionHandler;
         PixelCollisionHandler ch2 = dj.GetComponentInParent(typeof(PixelCollisionHandler)) as PixelCollisionHandler;
         if ((ch1 != null) && (ch2 != null))
         {
-            ch1.joints.Remove(dj);
-            ch2.joints.Remove(dj);
-            Destroy(dj);
-            return true;
-        } else
+            if (ignoreUnbreakable || (!string.Equals(ch1.tag, UnbreakableTag, System.StringComparison.InvariantCultureIgnoreCase) &&
+                (!string.Equals(ch2.tag, UnbreakableTag, System.StringComparison.InvariantCultureIgnoreCase)))){
+                ch1.joints.Remove(dj);
+                ch2.joints.Remove(dj);
+                Destroy(dj);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
         {
             return false;
         }
     }
 
-    public DistanceJoint2D GetJoint(PixelCollisionHandler ch)
+    public static bool DestroyJoint(SpringJoint2D dj)
+    {
+        return DestroyJoint(dj, false);
+    }
+
+    public SpringJoint2D GetJoint(PixelCollisionHandler ch)
     {
         if (ch != null)
         {
@@ -96,7 +112,7 @@ public class PixelCollisionHandler : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        joints = new List<DistanceJoint2D>();
+        joints = new List<SpringJoint2D>();
     }
 
     // Update is called once per frame
@@ -118,7 +134,8 @@ public class PixelCollisionHandler : MonoBehaviour
             string.Equals(otherPixel.tag, StickyTag, System.StringComparison.InvariantCultureIgnoreCase))
             ){
             AddJoint(otherPixel);
-        } else if (string.Equals(coll.gameObject.tag, DissolveTag,System.StringComparison.InvariantCultureIgnoreCase))
+        } else if (string.Equals(coll.gameObject.tag, DissolveTag,System.StringComparison.InvariantCultureIgnoreCase) &&
+            !string.Equals(this.tag, UnbreakableTag, System.StringComparison.InvariantCultureIgnoreCase))
         {
             Destroy(this);
         }
@@ -129,9 +146,9 @@ public class PixelCollisionHandler : MonoBehaviour
     /// </summary>
     void OnDestroy()
     {
-        foreach (DistanceJoint2D dj in this.joints)
+        foreach (SpringJoint2D dj in this.joints)
         {
-            DestroyJoint(dj);
+            DestroyJoint(dj, true);
         }
     }
 }
