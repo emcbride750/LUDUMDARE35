@@ -27,7 +27,7 @@ public class PixelCollisionHandler : MonoBehaviour
         //create new joint between both objects and add to internal list on both
         if ((ch != null) && (this != ch) && (ch.Joints.Count < maxConnectors) && (this.Joints.Count < maxConnectors) && (!this.GetConnectedCollisionHandlers().Contains(ch)))
         {
-            float dist = Vector2.Distance(this.transform.localPosition, ch.transform.localPosition);
+            //float dist = Vector2.Distance(this.transform.localPosition, ch.transform.localPosition);
 
             RelativeJoint2D dj = gameObject.AddComponent(typeof(RelativeJoint2D)) as RelativeJoint2D;
             dj.connectedBody = ch.GetComponent<Rigidbody2D>();
