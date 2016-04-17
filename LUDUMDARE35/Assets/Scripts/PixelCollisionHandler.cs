@@ -53,16 +53,11 @@ public class PixelCollisionHandler : MonoBehaviour
 
     //Is it sticky?
     public bool sticky = false;
-<<<<<<< HEAD
 
 	//Is it in the goal?
 	public bool inGoal = false;
-
-	public static string StickyTag = "sticky";
-=======
-    public bool inGoal = false;
+	
     public static string StickyTag = "sticky";
->>>>>>> 46d1dce5be89e9270f28466ba912b3d5b9480170
 
     private static int maxConnectors = 40;
     private static float maxSpeed = 100.0f;
