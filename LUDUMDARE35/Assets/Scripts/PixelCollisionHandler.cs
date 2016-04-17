@@ -45,10 +45,16 @@ public class PixelJoint : MonoBehaviour
 [RequireComponent(typeof(Rigidbody2D))]
 public class PixelCollisionHandler : MonoBehaviour
 {
+	//Is the player?
+	public bool isPlayer = false;
+
     //Is it sticky?
     public bool sticky = false;
 
-    public static string StickyTag = "sticky";
+	//Is it in the goal?
+	public bool inGoal = false;
+
+	public static string StickyTag = "sticky";
 
     private static int maxConnectors = 40;
     private static float maxSpeed = 100.0f;
@@ -208,6 +214,31 @@ public class PixelCollisionHandler : MonoBehaviour
                 rb.velocity = rb.velocity.normalized * maxSpeed;
             }
         }
+
+		//Set our color if we are in the goal
+		Color targetColor = Color.white;
+		if (this.inGoal)
+		{
+			//We want to be gold
+			targetColor = Color.yellow;
+		}
+
+		//Is it the player?
+		if (this.isPlayer)
+		{
+			//Its red
+			targetColor = Color.red;
+		}
+
+		//Is it sticky?
+		if (this.sticky)
+		{
+			//We are gren
+			targetColor = Color.green;
+		}
+
+		//Set the color
+		this.gameObject.GetComponent<SpriteRenderer>().color = targetColor;
     }
 
     /// <summary>
@@ -255,7 +286,4 @@ public class PixelCollisionHandler : MonoBehaviour
             print("no player to remove " + this.name + " from.");
         }
     }
-
-
-
 }
