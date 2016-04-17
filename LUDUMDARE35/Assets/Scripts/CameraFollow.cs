@@ -9,8 +9,8 @@ public class CameraFollow : MonoBehaviour {
     //private float m_OffsetZ;
     private float m_Size;
     private Camera cam;
-    public float zoomSpeed = 0.7f;
-    public float maxZoomOutRelative = 1.4f;
+    //public float zoomSpeed = 0.2f;
+    //public float maxZoomOutRelative = 1.05f;
     private Vector3 m_CurrentVelocity;
     //private float maxAxisLookAhead = 5.0f;
     // Use this for initialization
@@ -47,9 +47,12 @@ public class CameraFollow : MonoBehaviour {
         Vector3 aheadTargetPos = new Vector3(target.position.x + velocityDamp(velocity.x), target.position.y + velocityDamp(velocity.y), 0);
         Vector3 currentPos = new Vector3(transform.position.x, transform.position.y, 0);
         Vector3 midPos = Vector3.SmoothDamp(currentPos, aheadTargetPos, ref m_CurrentVelocity, damping);
+        
+        //float zoomOut = Mathf.Max(m_Size + m_Size * vDamp * zoomSpeed, maxZoomOutRelative);
 
-        float zoom = Mathf.Lerp(m_Size, Mathf.Max(m_Size, Mathf.Min(m_Size * maxZoomOutRelative, m_Size * vDamp * zoomSpeed)), Time.time);
-        this.cam.orthographicSize = zoom;
+
+        //float zoom = Mathf.Lerp(m_Size, zoomOut, Time.time);
+        //this.cam.orthographicSize = zoom;
 
 
         transform.position = midPos + (transform.position.z * Vector3.forward);

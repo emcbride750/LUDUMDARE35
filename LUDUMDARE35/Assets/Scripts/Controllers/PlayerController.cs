@@ -21,7 +21,7 @@ public class PlayerController : MonoBehaviour, IPixelConnectionTarget
 
     public static float kHorizontalForceMaximum = 200;
     public static float kVerticalForceMaximum = 200;
-    public static float kRotationalForceMaximum = 200;
+    public static float kRotationalForceMaximum = 100;
     public float maxSpeed = 60.0f;
 
 
@@ -101,14 +101,14 @@ public class PlayerController : MonoBehaviour, IPixelConnectionTarget
         {
             verticalValue = 0;
         }
-        if ((rVel > maxSpeed) && (rotationValue > 0))
+        /*if ((rVel > maxSpeed) && (rotationValue > 0))
         {
             rotationValue = 0;
         }
         if ((rVel < -maxSpeed) && (rotationValue < 0))
         {
             rotationValue = 0;
-        }
+        }*/
         // Now we can use these values to apply a force value to the pixel that we own
         var horizontalForce = kHorizontalForceMaximum * horizontalValue;
         var verticalForce = kVerticalForceMaximum * verticalValue;
