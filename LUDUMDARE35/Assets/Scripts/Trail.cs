@@ -27,7 +27,8 @@ public class Trail : MonoBehaviour
         if ((tr != null) && (rd != null))
         {
             float speed = rd.velocity.magnitude;
-            tr.time = Mathf.Lerp(0, startTime, Mathf.Min(maxSpeed, speed / maxSpeed));
+            //tr.time = Mathf.Lerp(0, startTime, Mathf.Min(maxSpeed, speed / maxSpeed));
+                tr.enabled = (speed > maxSpeed);
         }
     }*/
 }

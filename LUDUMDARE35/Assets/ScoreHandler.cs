@@ -37,38 +37,7 @@ public class ScoreHandler : MonoBehaviour {
 	private bool ScorePixel(PixelCollisionHandler pixel, ArrayList handledPixels)
 	{
 
-		//Is it in the goal?
-		if (pixel.inGoal)
-		{
-			//We can ask all of our connections
-			//Check all connected pixels
-			foreach (PixelCollisionHandler otherPixel in pixel.GetConnectedCollisionHandlers())
-			{
-				//Have we already scored it?
-				if (!handledPixels.Contains(otherPixel))
-				{
-					//We add it
-					handledPixels.Add(otherPixel);
-
-					//Is it good?
-					if(!ScorePixel(otherPixel, handledPixels))
-					{
-						//We're also not good
-						return false;
-					}
-				}
-			}
-		}
-		else
-		{
-			//We failed already
-			return false;
-		}
-
-		
-
-		//Return the score
-		return true;
+        return false;
 	}
 
 	public void SetScoreCheck(bool good)

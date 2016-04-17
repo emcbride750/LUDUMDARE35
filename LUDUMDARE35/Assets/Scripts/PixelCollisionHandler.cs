@@ -5,6 +5,8 @@ using System.Linq;
 using System;
 using UnityEngine.EventSystems;
 
+
+[RequireComponent(typeof(ScoringObject))]
 [RequireComponent(typeof(FixedJoint2D))]
 public class PixelJoint : MonoBehaviour
 {
@@ -14,12 +16,17 @@ public class PixelJoint : MonoBehaviour
     {
         if (joint != null)
         {
-            PixelCollisionHandler ch1 = joint.connectedBody.GetComponentInParent(typeof(PixelCollisionHandler)) as PixelCollisionHandler;
-            PixelCollisionHandler ch2 = joint.GetComponentInParent(typeof(PixelCollisionHandler)) as PixelCollisionHandler;
-            if (ch1 != null)
+            var cb1 = joint.connectedBody;
+            if (cb1 != null)
             {
-                ch1.removeJoint(this);
+                PixelCollisionHandler ch1 = cb1.GetComponentInParent(typeof(PixelCollisionHandler)) as PixelCollisionHandler;
+                if (ch1 != null)
+                {
+                    ch1.removeJoint(this);
+                }
             }
+            
+            PixelCollisionHandler ch2 = joint.GetComponentInParent(typeof(PixelCollisionHandler)) as PixelCollisionHandler;
             if (ch2 != null)
             {
                 ch2.removeJoint(this);
@@ -53,9 +60,6 @@ public class PixelCollisionHandler : MonoBehaviour
 
     //Is it sticky?
     public bool sticky = false;
-
-	//Is it in the goal?
-	public bool inGoal = false;
 	
     public static string StickyTag = "sticky";
 
@@ -220,11 +224,20 @@ public class PixelCollisionHandler : MonoBehaviour
 
 		//Set our color if we are in the goal
 		Color targetColor = Color.white;
-		if (this.inGoal)
-		{
-			//We want to be gold
-			targetColor = Color.yellow;
-		}
+        ScoringObject sc = GetComponent<ScoringObject>();
+        if (sc != null)
+        {
+            if (sc.State == ScoringObject.goalState.INSIDE)
+            {
+                //We want to be gold
+                targetColor = Color.yellow;
+            } else if (sc.State == ScoringObject.goalState.DOORFRAME)
+            {
+                //We want to be gold
+                targetColor = Color.magenta;
+            }
+        }
+		
 
 		//Is it the player?
 		if (this.isPlayer)
@@ -291,7 +304,7 @@ public class PixelCollisionHandler : MonoBehaviour
         }
         else
         {
-            print("no player to remove " + this.name + " from.");
+            //print("no player to remove " + this.name + " from.");
         }
     }
 }

@@ -1,57 +1,56 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class GoalController : MonoBehaviour {
+[RequireComponent(typeof(Collider2D))]
+public class GoalController : MonoBehaviour
+{
 
-	//The score handler
-	public ScoreHandler scoreHandler;
+    public ScoringObject.goalState StateToSet = ScoringObject.goalState.OUTSIDE;
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is csalled once per frame
-	void Update () {
-	
-	}
+    void Awake()
+    {
+    }
 
-	//When colliding...
-	void OnTriggerEnter2D(Collider2D coll)
-	{
-		//Are we colliding with a pixel
-		PixelCollisionHandler pixel = coll.gameObject.GetComponent<PixelCollisionHandler>();
+    // Use this for initialization
+    void Start()
+    {
 
-		//Was there one?
-		if (pixel)
-		{
-			//We need to tell it that it is part of the goal
-			pixel.inGoal = true;
+    }
 
+    // Update is csalled once per frame
+    void Update()
+    {
 
-			//Recalculate the score
-			scoreHandler.currentScore += 1;
-			scoreHandler.CalculateScore();
-		}
-	}
+    }
 
-	//When leaving...
-	void OnTriggerExit2D(Collider2D coll)
-	{
-		//Are we colliding with a pixel
-		PixelCollisionHandler pixel = coll.gameObject.GetComponent<PixelCollisionHandler>();
+    //When colliding...
+    void OnTriggerEnter2D(Collider2D coll)
+    {
+        //Are we colliding with a pixel
+        ScoringObject scoringObject = coll.gameObject.GetComponentInChildren<ScoringObject>();
 
-		//Was there one?
-		if (pixel)
-		{
-			//We need to tell it that it is part of the goal
-			pixel.inGoal = false;
+        //Was there one?
+        if (scoringObject)
+        {
+            //We need to tell it that it is part of the goal
+            scoringObject.pushState(StateToSet);
+        }
+    }
 
-			//Lose a score
-			scoreHandler.currentScore -= 1;
-		}
+    //When leaving...
+    void OnTriggerExit2D(Collider2D coll)
+    {
 
-		//We can't win if something leaves
-		scoreHandler.SetScoreCheck(false);
-	}
+        //Are we colliding with a pixel
+        ScoringObject scoringObject = coll.gameObject.GetComponentInChildren<ScoringObject>();
+
+        //Was there one?
+        if (scoringObject)
+        {
+            //We need to tell it that it is part of the goal
+            scoringObject.popState();
+
+        }
+
+    }
 }
