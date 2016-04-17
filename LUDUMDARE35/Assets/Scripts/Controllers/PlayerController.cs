@@ -17,11 +17,11 @@ public class PlayerController : MonoBehaviour, IPixelConnectionTarget
     private string kRotationalAxisString = "Rotation";
     private string kVerticalAxisString = "Vertical";
 
-    private float kAxisAbsoluteMaximum = 1;
+    private float kAxisAbsoluteMaximum = 1f;
 
-    public static float kHorizontalForceMaximum = 5;
-    public static float kVerticalForceMaximum = 5;
-    public static float kRotationalForceMaximum = 5;
+    public static float kHorizontalForceMaximum = 1f;
+    public static float kVerticalForceMaximum = 1f;
+    public static float kRotationalForceMaximum = 1f;
 
 
     public static GameObject getPlayer()

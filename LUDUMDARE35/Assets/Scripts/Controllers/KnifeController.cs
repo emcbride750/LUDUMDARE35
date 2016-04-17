@@ -25,6 +25,7 @@ public class KnifeController : MonoBehaviour
     {
 		print(coll.gameObject.name);
         PixelCollisionHandler aPixel = coll.gameObject.GetComponent<PixelCollisionHandler>();
+		aPixel.GetComponent<SpriteRenderer>().color = Color.blue;
         if (aPixel != null)
         {
             bool alreadyPresent = false;
@@ -37,10 +38,10 @@ public class KnifeController : MonoBehaviour
                 }
                 else {
                     try {
-                        PixelCollisionHandler.DestroyJoint(aPixel.GetJoint(p));
+                        PixelCollisionHandler.DestroyJoint(aPixel, p);
                     } catch
                     {
-                        //ignore.
+						print("ROBOEM");//ignore.
                     }
                 }
             }
@@ -57,7 +58,8 @@ public class KnifeController : MonoBehaviour
         if (aPixel != null)
         {
             touching.Remove(aPixel);
-        }
+			aPixel.GetComponent<SpriteRenderer>().color = Color.white;
+		}
 
     }
 }

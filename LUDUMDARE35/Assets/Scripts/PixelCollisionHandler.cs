@@ -12,11 +12,11 @@ public class PixelCollisionHandler : MonoBehaviour
     public static string DissolveTag = "dissolve";
     public static string UnbreakableTag = "unbreakable";
 
-    private static int maxConnectors = 4;
+    private static int maxConnectors = 40;
     
-	private List<FixedJoint2D> joints = new List<FixedJoint2D>();
+	private List<Joint2D> joints = new List<Joint2D>();
     
-    public List<FixedJoint2D> Joints
+    public List<Joint2D> Joints
     {
         get
         {
@@ -32,10 +32,16 @@ public class PixelCollisionHandler : MonoBehaviour
             //float dist = Vector2.Distance(this.transform.localPosition, ch.transform.localPosition);
             FixedJoint2D dj = gameObject.AddComponent(typeof(FixedJoint2D)) as FixedJoint2D;
             dj.connectedBody = ch.GetComponent<Rigidbody2D>();
-            //dj.autoConfigureOffset = false;
-            //dj.maxTorque = 900;
+			//dj.autoConfigureOffset = false;
+			//dj.maxTorque = 1000;
+			//dj.maxForce = 1000;
+			//dj.correctionScale = 1;
+			//dj.frequency = 1000000f;
+			//dj.dampingRatio = 1;
+			dj.autoConfigureConnectedAnchor = false;
+			dj.enableCollision = false;
             this.joints.Add(dj);
-            ch.joints.Add(dj);
+            //ch.joints.Add(dj);
 
             //tell player that we are connected
             GameObject pc = PlayerController.getPlayer();
@@ -75,7 +81,7 @@ public class PixelCollisionHandler : MonoBehaviour
         }
     }
 
-    private static void DestroyJoint(FixedJoint2D dj, bool ignoreUnbreakable)
+    private static void DestroyJoint(Joint2D dj, bool ignoreUnbreakable)
     {
         if (dj != null)
         {
@@ -86,8 +92,8 @@ public class PixelCollisionHandler : MonoBehaviour
                 if (ignoreUnbreakable || (!string.Equals(ch1.tag, UnbreakableTag, System.StringComparison.InvariantCultureIgnoreCase) &&
                     (!string.Equals(ch2.tag, UnbreakableTag, System.StringComparison.InvariantCultureIgnoreCase))))
                 {
-                    ch1.joints.Remove(dj);
-                    ch2.joints.Remove(dj);
+					//ch1.joints.Remove(dj);
+					dj.gameObject.GetComponent<PixelCollisionHandler>().joints.Remove(dj);
                     Destroy(dj);
 
                     //TODO: remove pixels on player object
@@ -105,12 +111,28 @@ public class PixelCollisionHandler : MonoBehaviour
         throw new Exception();
     }
 
-    public static void DestroyJoint(FixedJoint2D dj)
+    public static void DestroyJoint(Joint2D dj)
     {
         DestroyJoint(dj, false);
     }
 
-    public FixedJoint2D GetJoint(PixelCollisionHandler ch)
+	public static void DestroyJoint(PixelCollisionHandler pixel1, PixelCollisionHandler pixel2)
+	{
+		//Look for all the joints involving these two
+		try
+		{
+			DestroyJoint(pixel1.GetJoint(pixel2));
+		}
+		catch { }
+        try
+		{
+			DestroyJoint(pixel2.GetJoint(pixel1));
+		}
+		catch { }
+		
+	}
+
+    public Joint2D GetJoint(PixelCollisionHandler ch)
     {
         if ((ch != null) && (this != ch))
         {
