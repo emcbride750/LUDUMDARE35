@@ -34,10 +34,27 @@ public class ScoringObject : MonoBehaviour {
     {
         if (goalStack != null)
         {
-            goalStack.Push(gs);
-            if (sc != null)
+            if (gs != goalState.OUTSIDE)
             {
-                ExecuteEvents.Execute<IScoreEvent>(sc.gameObject, null, (x, y) => x.AddPoint(gs));
+                goalStack.Push(gs);
+                if (sc != null)
+                {
+                    ExecuteEvents.Execute<IScoreEvent>(sc.gameObject, null, (x, y) => x.AddPoint(gs));
+                }
+            } else
+            {
+                //empty stack
+                while (true)
+                {
+                    try
+                    {
+                        this.popState();
+                    }
+                    catch
+                    {
+                        break;
+                    }
+                }
             }
         }
     }
@@ -53,13 +70,21 @@ public class ScoringObject : MonoBehaviour {
             return gs;
         } else
         {
-            return goalState.OUTSIDE;
+            throw new Exception("stack empty");
         }
     }
 
     public void OnDestroy()
     {
-        this.popState();
+        while (true)
+        {
+            try {
+                this.popState();
+            } catch
+            {
+                break;
+            }
+        }
     }
 
     // Use this for initialization

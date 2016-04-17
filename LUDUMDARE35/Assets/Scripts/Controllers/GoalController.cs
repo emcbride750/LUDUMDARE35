@@ -22,8 +22,13 @@ public class GoalController : MonoBehaviour
             GameObject doorFrame = Instantiate(this.gameObject);
             doorFrame.GetComponent<GoalController>().StateToSet = ScoringObject.goalState.DOORFRAME;
             doorFrame.transform.localScale = this.transform.localScale * 1.3f;
-            doorFrame.GetComponent<SpriteRenderer>().color = Color.gray;
-            doorFrame.GetComponent<SpriteRenderer>().sortingOrder = this.GetComponent<SpriteRenderer>().sortingOrder - 1;
+            doorFrame.GetComponent<SpriteRenderer>().enabled = false;
+            //create reset frame
+            GameObject resetFrame = Instantiate(doorFrame);
+            resetFrame.GetComponent<GoalController>().StateToSet = ScoringObject.goalState.OUTSIDE;
+            resetFrame.transform.localScale = doorFrame.transform.localScale * 1.3f;
+            resetFrame.GetComponent<SpriteRenderer>().enabled = false;
+
         }
     }
 

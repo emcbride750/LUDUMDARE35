@@ -40,7 +40,7 @@ public class ScoreController : MonoBehaviour, IScoreEvent
         }
         GameObject.Find("ScoreGood").GetComponent<RawImage>().texture = targetSprite;
         //update score text
-        GameObject.Find("ScoreText").GetComponent<Text>().text = "Score: " + winCount;
+        GameObject.Find("ScoreText").GetComponent<Text>().text = "Score: " + winCount +". Good: "+ this.counts[ScoringObject.goalState.INSIDE] + ". Bad: " + this.counts[ScoringObject.goalState.DOORFRAME];
     }
 
     public void AddPoint(ScoringObject.goalState gs)
@@ -59,16 +59,24 @@ public class ScoreController : MonoBehaviour, IScoreEvent
             if (this.counts != null)
             {
                 //can't win if any are in the doorframe
-                if (this.counts.ContainsKey(ScoringObject.goalState.DOORFRAME) && (this.counts[ScoringObject.goalState.DOORFRAME] > 0))
+                int frame = 0;
+                if (this.counts.ContainsKey(ScoringObject.goalState.DOORFRAME))
                 {
-                    return 0;
+                    frame = this.counts[ScoringObject.goalState.DOORFRAME];
                 }
+                int inside = 0;
+
                 if (this.counts.ContainsKey(ScoringObject.goalState.INSIDE))
                 {
-                    return this.counts[ScoringObject.goalState.INSIDE];
-                } else
+                    inside = this.counts[ScoringObject.goalState.INSIDE];
+                }
+
+                if (inside < frame)
                 {
                     return 0;
+                } else
+                {
+                    return inside;
                 }
             } else
             {
