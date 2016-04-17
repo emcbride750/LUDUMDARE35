@@ -2,6 +2,7 @@
 using System.Collections;
 
 [RequireComponent(typeof(Collider2D))]
+[RequireComponent(typeof(SpriteRenderer))]
 public class GoalController : MonoBehaviour
 {
 
@@ -14,7 +15,16 @@ public class GoalController : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-
+        //create doorway automatically
+        if (this.StateToSet == ScoringObject.goalState.INSIDE)
+        {
+            //create frame
+            GameObject doorFrame = Instantiate(this.gameObject);
+            doorFrame.GetComponent<GoalController>().StateToSet = ScoringObject.goalState.DOORFRAME;
+            doorFrame.transform.localScale = this.transform.localScale * 1.3f;
+            doorFrame.GetComponent<SpriteRenderer>().color = Color.gray;
+            doorFrame.GetComponent<SpriteRenderer>().sortingOrder = this.GetComponent<SpriteRenderer>().sortingOrder - 1;
+        }
     }
 
     // Update is csalled once per frame
