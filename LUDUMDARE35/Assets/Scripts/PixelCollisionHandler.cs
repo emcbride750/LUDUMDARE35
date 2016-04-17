@@ -8,8 +8,14 @@ using UnityEngine.EventSystems;
 [RequireComponent(typeof(Rigidbody2D))]
 public class PixelCollisionHandler : MonoBehaviour
 {
+	//Are we the player?
+	public bool isPlayer = false;
+
 	//Is it sticky?
 	public bool sticky = false;
+
+	//Is it in the goal?
+	public bool inGoal = false;
 
     public static string StickyTag = "sticky";
     public static string DissolveTag = "dissolve";
@@ -165,7 +171,24 @@ public class PixelCollisionHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+		//Are we in the goal?
+		if (this.inGoal)
+		{
+			//We're golden
+			this.GetComponent<SpriteRenderer>().color = Color.yellow;
+		}
+		else
+		{
+			//Nope
+			this.GetComponent<SpriteRenderer>().color = Color.white;
+		}
 
+		//Player's always red
+		if (this.isPlayer)
+		{
+			//We're red
+			this.GetComponent<SpriteRenderer>().color = Color.red;
+		}
     }
 
     /// <summary>
