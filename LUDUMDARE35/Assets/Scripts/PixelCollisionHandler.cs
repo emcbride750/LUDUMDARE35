@@ -12,15 +12,18 @@ public class PixelJoint : MonoBehaviour
 
     private void CleanUp()
     {
-        PixelCollisionHandler ch1 = joint.connectedBody.GetComponentInParent(typeof(PixelCollisionHandler)) as PixelCollisionHandler;
-        PixelCollisionHandler ch2 = joint.GetComponentInParent(typeof(PixelCollisionHandler)) as PixelCollisionHandler;
-        if (ch1 != null)
+        if (joint != null)
         {
-            ch1.removeJoint(this);
-        }
-        if (ch2 != null)
-        {
-            ch2.removeJoint(this);
+            PixelCollisionHandler ch1 = joint.connectedBody.GetComponentInParent(typeof(PixelCollisionHandler)) as PixelCollisionHandler;
+            PixelCollisionHandler ch2 = joint.GetComponentInParent(typeof(PixelCollisionHandler)) as PixelCollisionHandler;
+            if (ch1 != null)
+            {
+                ch1.removeJoint(this);
+            }
+            if (ch2 != null)
+            {
+                ch2.removeJoint(this);
+            }
         }
     }
     void OnJointBreak(float breakForce)
@@ -50,11 +53,16 @@ public class PixelCollisionHandler : MonoBehaviour
 
     //Is it sticky?
     public bool sticky = false;
+<<<<<<< HEAD
 
 	//Is it in the goal?
 	public bool inGoal = false;
 
 	public static string StickyTag = "sticky";
+=======
+    public bool inGoal = false;
+    public static string StickyTag = "sticky";
+>>>>>>> 46d1dce5be89e9270f28466ba912b3d5b9480170
 
     private static int maxConnectors = 40;
     private static float maxSpeed = 100.0f;
@@ -74,6 +82,9 @@ public class PixelCollisionHandler : MonoBehaviour
             return joints;
         }
     }
+
+
+
 
     public void AddJoint(PixelCollisionHandler ch)
     {
@@ -194,9 +205,6 @@ public class PixelCollisionHandler : MonoBehaviour
     // Use this for initialization
     void Awake()
     {
-        var tr = this.GetComponent<TrailRenderer>();
-        tr.sortingOrder = -100;
-        //tr.sortingLayerName = "TransparentFX";
     }
 
     // Update is called once per frame
@@ -249,15 +257,20 @@ public class PixelCollisionHandler : MonoBehaviour
     {
         if (coll != null)
         {
-            PixelCollisionHandler otherPixel = coll.gameObject.GetComponent<PixelCollisionHandler>();
-
-            if ((otherPixel != null) &&
-                this.sticky ||
-                otherPixel.sticky
-                )
+            GameObject g = coll.gameObject;
+            if (g != null)
             {
-                AddJoint(otherPixel);
+                PixelCollisionHandler otherPixel = g.GetComponent<PixelCollisionHandler>();
+
+                if ((otherPixel != null) &&
+                    (this.sticky ||
+                    otherPixel.sticky
+                    ))
+                {
+                    AddJoint(otherPixel);
+                }
             }
+
         }
     }
 
@@ -272,7 +285,7 @@ public class PixelCollisionHandler : MonoBehaviour
         {
             if (dj != null)
             {
-                Destroy(dj.gameObject);
+                Destroy(dj);
             }
         }
         //tell player that we are not connected
