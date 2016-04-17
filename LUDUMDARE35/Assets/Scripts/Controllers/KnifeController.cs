@@ -7,10 +7,16 @@ using System.Linq;
 public class KnifeController : MonoBehaviour
 {
 
+	//The player
+	PixelCollisionHandler player;
+
     // Use this for initialization
     void Start()
     {
         touching = new List<PixelCollisionHandler>();
+
+		//Get the player
+		player = GameObject.Find("Player").GetComponent<PixelCollisionHandler>();
     }
 
     // Update is called once per frame
@@ -37,6 +43,14 @@ public class KnifeController : MonoBehaviour
                     break;
                 }
                 else {
+
+					//Are either of them the player?
+					if(aPixel==this.player || p == this.player)
+					{
+						//Do nothing
+						return;
+					}
+
                     try {
                         PixelCollisionHandler.DestroyJoint(aPixel, p);
                     } catch
