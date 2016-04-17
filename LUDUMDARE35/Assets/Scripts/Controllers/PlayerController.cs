@@ -21,7 +21,7 @@ public class PlayerController : MonoBehaviour, IPixelConnectionTarget
 
     public static float kHorizontalForceMaximum = 200;
     public static float kVerticalForceMaximum = 200;
-    public static float kRotationalForceMaximum = 100;
+    public static float kRotationalForceMaximum = 200;
     public float maxSpeed = 60.0f;
 
 
