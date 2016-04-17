@@ -5,27 +5,63 @@ using System.Linq;
 using System;
 using UnityEngine.EventSystems;
 
+[RequireComponent(typeof(FixedJoint2D))]
+public class PixelJoint : MonoBehaviour
+{
+    public FixedJoint2D joint;
+
+    private void CleanUp()
+    {
+        PixelCollisionHandler ch1 = joint.connectedBody.GetComponentInParent(typeof(PixelCollisionHandler)) as PixelCollisionHandler;
+        PixelCollisionHandler ch2 = joint.GetComponentInParent(typeof(PixelCollisionHandler)) as PixelCollisionHandler;
+        if (ch1 != null)
+        {
+            ch1.removeJoint(this);
+        }
+        if (ch2 != null)
+        {
+            ch2.removeJoint(this);
+        }
+    }
+    void OnJointBreak(float breakForce)
+    {
+        Debug.Log("Joint Broke!, force: " + breakForce);
+        CleanUp();
+        if (joint != null)
+        {
+            Destroy(joint);
+        }
+    }
+
+    void OnDestroy()
+    {
+        CleanUp();
+        if (joint != null)
+        {
+            Destroy(joint);
+        }
+    }
+}
 [RequireComponent(typeof(Rigidbody2D))]
 public class PixelCollisionHandler : MonoBehaviour
 {
-	//Are we the player?
-	public bool isPlayer = false;
-
-	//Is it sticky?
-	public bool sticky = false;
-
-	//Is it in the goal?
-	public bool inGoal = false;
+    //Is it sticky?
+    public bool sticky = false;
 
     public static string StickyTag = "sticky";
-    public static string DissolveTag = "dissolve";
-    public static string UnbreakableTag = "unbreakable";
 
     private static int maxConnectors = 40;
-    
-	private List<Joint2D> joints = new List<Joint2D>();
-    
-    public List<Joint2D> Joints
+    private static float maxSpeed = 100.0f;
+    private static float breakForce = 900.0f;
+
+    private List<PixelJoint> joints = new List<PixelJoint>();
+
+    public void removeJoint(PixelJoint j)
+    {
+        this.joints.Remove(j);
+    }
+
+    public List<PixelJoint> Joints
     {
         get
         {
@@ -39,18 +75,21 @@ public class PixelCollisionHandler : MonoBehaviour
         if ((ch != null) && (this != ch) && (ch.Joints.Count <= maxConnectors) && (this.Joints.Count <= maxConnectors) && (!this.GetConnectedCollisionHandlers().Contains(ch)))
         {
             //float dist = Vector2.Distance(this.transform.localPosition, ch.transform.localPosition);
-            FixedJoint2D dj = gameObject.AddComponent(typeof(FixedJoint2D)) as FixedJoint2D;
-            dj.connectedBody = ch.GetComponent<Rigidbody2D>();
-			//dj.autoConfigureOffset = false;
-			//dj.maxTorque = 1000;
-			//dj.maxForce = 1000;
-			//dj.correctionScale = 1;
-			//dj.frequency = 1000000f;
-			//dj.dampingRatio = 1;
-			dj.autoConfigureConnectedAnchor = false;
-			dj.enableCollision = false;
+            FixedJoint2D fj = gameObject.AddComponent(typeof(FixedJoint2D)) as FixedJoint2D;
+            PixelJoint dj = gameObject.AddComponent(typeof(PixelJoint)) as PixelJoint;
+            dj.joint = fj;
+            dj.joint.connectedBody = ch.GetComponent<Rigidbody2D>();
+            //dj.autoConfigureOffset = false;
+            //dj.maxTorque = 1000;
+            //dj.maxForce = 1000;
+            //dj.correctionScale = 1;
+            //dj.frequency = 1000000f;
+            //dj.dampingRatio = 1;
+            dj.joint.autoConfigureConnectedAnchor = false;
+            dj.joint.enableCollision = false;
+            dj.joint.breakForce = breakForce;
             this.joints.Add(dj);
-            //ch.joints.Add(dj);
+            ch.joints.Add(dj);
 
             //tell player that we are connected
             GameObject pc = PlayerController.getPlayer();
@@ -67,17 +106,18 @@ public class PixelCollisionHandler : MonoBehaviour
             {
                 print("no player to add " + this.name + " to.");
             }
-        } else
+        }
+        else
         {
-			throw new Exception();
+            throw new Exception();
         }
     }
 
     public IEnumerable<PixelCollisionHandler> GetConnectedCollisionHandlers()
     {
-        foreach (FixedJoint2D dj in this.joints)
+        foreach (PixelJoint dj in this.joints)
         {
-            PixelCollisionHandler ch1 = dj.connectedBody.GetComponentInParent(typeof(PixelCollisionHandler)) as PixelCollisionHandler;
+            PixelCollisionHandler ch1 = dj.joint.connectedBody.GetComponentInParent(typeof(PixelCollisionHandler)) as PixelCollisionHandler;
             if (this == ch1)
             {
                 PixelCollisionHandler ch2 = dj.GetComponentInParent(typeof(PixelCollisionHandler)) as PixelCollisionHandler;
@@ -90,64 +130,47 @@ public class PixelCollisionHandler : MonoBehaviour
         }
     }
 
-    private static void DestroyJoint(Joint2D dj, bool ignoreUnbreakable)
+    public static void DestroyJoint(PixelCollisionHandler pixel1, PixelCollisionHandler pixel2)
     {
-        if (dj != null)
+        //Look for all the joints involving these two
+        if ((pixel1 != null) && (pixel2 != null)) 
         {
-            PixelCollisionHandler ch1 = dj.connectedBody.GetComponent(typeof(PixelCollisionHandler)) as PixelCollisionHandler;
-            PixelCollisionHandler ch2 = dj.GetComponentInParent(typeof(PixelCollisionHandler)) as PixelCollisionHandler;
-            if ((ch1 != null) && (ch2 != null))
+            foreach (PixelJoint dj in pixel1.joints)
             {
-                if (ignoreUnbreakable || (!string.Equals(ch1.tag, UnbreakableTag, System.StringComparison.InvariantCultureIgnoreCase) &&
-                    (!string.Equals(ch2.tag, UnbreakableTag, System.StringComparison.InvariantCultureIgnoreCase))))
+                PixelCollisionHandler ch = dj.joint.connectedBody.GetComponentInParent(typeof(PixelCollisionHandler)) as PixelCollisionHandler;
+                if (pixel1 == ch)
                 {
-					//ch1.joints.Remove(dj);
-					dj.gameObject.GetComponent<PixelCollisionHandler>().joints.Remove(dj);
-                    Destroy(dj);
-
-                    //TODO: remove pixels on player object
+                    ch = dj.GetComponentInParent(typeof(PixelCollisionHandler)) as PixelCollisionHandler;
                 }
-                else
+                if (ch == pixel2)
                 {
-                    throw new Exception();
+                    Destroy(dj);
+                    return;
                 }
             }
-            else
+            foreach (PixelJoint dj in pixel2.joints)
             {
-                throw new Exception();
+                PixelCollisionHandler ch = dj.joint.connectedBody.GetComponentInParent(typeof(PixelCollisionHandler)) as PixelCollisionHandler;
+                if (pixel2 == ch)
+                {
+                    ch = dj.GetComponentInParent(typeof(PixelCollisionHandler)) as PixelCollisionHandler;
+                }
+                if (ch == pixel1)
+                {
+                    Destroy(dj);
+                    return;
+                }
             }
         }
-        throw new Exception();
     }
 
-    public static void DestroyJoint(Joint2D dj)
-    {
-        DestroyJoint(dj, false);
-    }
-
-	public static void DestroyJoint(PixelCollisionHandler pixel1, PixelCollisionHandler pixel2)
-	{
-		//Look for all the joints involving these two
-		try
-		{
-			DestroyJoint(pixel1.GetJoint(pixel2));
-		}
-		catch { }
-        try
-		{
-			DestroyJoint(pixel2.GetJoint(pixel1));
-		}
-		catch { }
-		
-	}
-
-    public Joint2D GetJoint(PixelCollisionHandler ch)
+    public PixelJoint GetJoint(PixelCollisionHandler ch)
     {
         if ((ch != null) && (this != ch))
         {
             foreach (var j in this.joints)
             {
-                PixelCollisionHandler ch1 = j.connectedBody.GetComponentInParent(typeof(PixelCollisionHandler)) as PixelCollisionHandler;
+                PixelCollisionHandler ch1 = j.joint.connectedBody.GetComponentInParent(typeof(PixelCollisionHandler)) as PixelCollisionHandler;
                 PixelCollisionHandler ch2 = j.GetComponentInParent(typeof(PixelCollisionHandler)) as PixelCollisionHandler;
                 if ((ch == ch1) || (ch == ch2))
                 {
@@ -155,7 +178,8 @@ public class PixelCollisionHandler : MonoBehaviour
                 }
             }
             return null;
-        } else
+        }
+        else
         {
             return null;
         }
@@ -165,30 +189,25 @@ public class PixelCollisionHandler : MonoBehaviour
     void Awake()
     {
         var tr = this.GetComponent<TrailRenderer>();
-        tr.sortingLayerName = "TransparentFX";
+        tr.sortingOrder = -100;
+        //tr.sortingLayerName = "TransparentFX";
     }
 
     // Update is called once per frame
     void Update()
     {
-		//Are we in the goal?
-		if (this.inGoal)
-		{
-			//We're golden
-			this.GetComponent<SpriteRenderer>().color = Color.yellow;
-		}
-		else
-		{
-			//Nope
-			this.GetComponent<SpriteRenderer>().color = Color.white;
-		}
-
-		//Player's always red
-		if (this.isPlayer)
-		{
-			//We're red
-			this.GetComponent<SpriteRenderer>().color = Color.red;
-		}
+        //enforce maximum velocity on pixels.
+        var rb = this.GetComponent<Rigidbody2D>();
+        if (rb.velocity.magnitude > maxSpeed)
+        {
+            if (rb.velocity.magnitude > maxSpeed * 5)
+            {
+                Destroy(this);
+            }
+            else {
+                rb.velocity = rb.velocity.normalized * maxSpeed;
+            }
+        }
     }
 
     /// <summary>
@@ -197,17 +216,17 @@ public class PixelCollisionHandler : MonoBehaviour
     /// <param name="coll"></param>
     void OnCollisionEnter2D(Collision2D coll)
     {
-        PixelCollisionHandler otherPixel = coll.gameObject.GetComponent<PixelCollisionHandler>();
-
-        if ((otherPixel != null) && 
-            this.sticky ||
-            otherPixel.sticky
-            ){
-            AddJoint(otherPixel);
-        } else if (string.Equals(coll.gameObject.tag, DissolveTag,System.StringComparison.InvariantCultureIgnoreCase) &&
-            !string.Equals(this.tag, UnbreakableTag, System.StringComparison.InvariantCultureIgnoreCase))
+        if (coll != null)
         {
-            Destroy(this);
+            PixelCollisionHandler otherPixel = coll.gameObject.GetComponent<PixelCollisionHandler>();
+
+            if ((otherPixel != null) &&
+                this.sticky ||
+                otherPixel.sticky
+                )
+            {
+                AddJoint(otherPixel);
+            }
         }
     }
 
@@ -216,15 +235,13 @@ public class PixelCollisionHandler : MonoBehaviour
     /// </summary>
     void OnDestroy()
     {
-        FixedJoint2D[] l = new FixedJoint2D[this.joints.Count];
+        PixelJoint[] l = new PixelJoint[this.joints.Count];
         this.joints.CopyTo(l);
-        foreach (FixedJoint2D dj in l)
+        foreach (PixelJoint dj in l)
         {
-            try {
-                DestroyJoint(dj, true);
-            } catch
+            if (dj != null)
             {
-                //ignore
+                Destroy(dj.gameObject);
             }
         }
         //tell player that we are not connected
@@ -232,9 +249,10 @@ public class PixelCollisionHandler : MonoBehaviour
         if (pc != null)
         {
             ExecuteEvents.Execute<IPixelConnectionTarget>(pc, null, (x, y) => x.RemovePixel(this));
-        } else
+        }
+        else
         {
-            print("no player to remove "+this.name+" from.");
+            print("no player to remove " + this.name + " from.");
         }
     }
 
