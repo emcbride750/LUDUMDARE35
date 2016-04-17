@@ -71,7 +71,7 @@ public class ScoreController : MonoBehaviour, IScoreEvent
                     inside = this.counts[ScoringObject.goalState.INSIDE];
                 }
 
-                if (inside < frame)
+                if (frame > inside)
                 {
                     return 0;
                 } else
