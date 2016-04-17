@@ -50,7 +50,7 @@ public class PixelCollisionHandler : MonoBehaviour
 {
     //Is it sticky?
     public bool sticky = false;
-
+    public bool inGoal = false;
     public static string StickyTag = "sticky";
 
     private static int maxConnectors = 40;
@@ -71,6 +71,9 @@ public class PixelCollisionHandler : MonoBehaviour
             return joints;
         }
     }
+
+
+
 
     public void AddJoint(PixelCollisionHandler ch)
     {
