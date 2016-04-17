@@ -17,11 +17,12 @@ public class PlayerController : MonoBehaviour, IPixelConnectionTarget
     private string kRotationalAxisString = "Rotation";
     private string kVerticalAxisString = "Vertical";
 
-    private float kAxisAbsoluteMaximum = 1f;
+    //private float kAxisAbsoluteMaximum = Mathf.Sqrt(kHorizontalForceMaximum + kVerticalForceMaximum);
 
-    public static float kHorizontalForceMaximum = 1f;
-    public static float kVerticalForceMaximum = 1f;
-    public static float kRotationalForceMaximum = 1f;
+    public static float kHorizontalForceMaximum = 200;
+    public static float kVerticalForceMaximum = 200;
+    public static float kRotationalForceMaximum = 200;
+    public float maxSpeed = 60.0f;
 
 
     public static GameObject getPlayer()
@@ -80,14 +81,42 @@ public class PlayerController : MonoBehaviour, IPixelConnectionTarget
         var verticalValue = Input.GetAxis(kVerticalAxisString);
         var rotationValue = Input.GetAxis(kRotationalAxisString);
 
-        // Now we can use these values to apply a force value to the pixel that we own
-        var horizontalForce = kHorizontalForceMaximum * (horizontalValue / kAxisAbsoluteMaximum) * connectedPixelsCount;
-        var verticalForce = kVerticalForceMaximum * (verticalValue / kAxisAbsoluteMaximum) * connectedPixelsCount;
-        var rotationalForce = kRotationalForceMaximum * (rotationValue / kAxisAbsoluteMaximum) * connectedPixelsCount;
+        //Get current velocities
+        var hVel = pixelBody.velocity.x;
+        var vVel = pixelBody.velocity.y;
+        var rVel = pixelBody.inertia;
 
-        this.addHorizontalForce(horizontalForce);
-        this.addVerticalForce(verticalForce);
-        this.addRotationalForce(rotationalForce);
+        if ((hVel > maxSpeed) && (horizontalValue > 0)){
+            horizontalValue = 0;
+        }
+        if ((hVel < -maxSpeed) && (horizontalValue < 0))
+        {
+            horizontalValue = 0;
+        }
+        if ((vVel > maxSpeed) && (verticalValue > 0))
+        {
+            verticalValue = 0;
+        }
+        if ((vVel < -maxSpeed) && (verticalValue < 0))
+        {
+            verticalValue = 0;
+        }
+        if ((rVel > maxSpeed) && (rotationValue > 0))
+        {
+            rotationValue = 0;
+        }
+        if ((rVel < -maxSpeed) && (rotationValue < 0))
+        {
+            rotationValue = 0;
+        }
+        // Now we can use these values to apply a force value to the pixel that we own
+        var horizontalForce = kHorizontalForceMaximum * horizontalValue;
+        var verticalForce = kVerticalForceMaximum * verticalValue;
+        var rotationalForce = kRotationalForceMaximum * rotationValue;
+
+        pixelBody.AddForce(new Vector2(horizontalForce, 0));
+        pixelBody.AddForce(new Vector2(0, verticalForce));
+        pixelBody.AddTorque(rotationalForce);
     }
 
 

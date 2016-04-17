@@ -153,9 +153,10 @@ public class PixelCollisionHandler : MonoBehaviour
     }
 
     // Use this for initialization
-    void Start()
+    void Awake()
     {
-        
+        var tr = this.GetComponent<TrailRenderer>();
+        tr.sortingLayerName = "TransparentFX";
     }
 
     // Update is called once per frame
