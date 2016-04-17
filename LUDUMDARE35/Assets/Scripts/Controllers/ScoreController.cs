@@ -32,12 +32,15 @@ public class ScoreController : MonoBehaviour, IScoreEvent
             this.counts[gs] = this.counts[gs] + mod;
         }
         //update image
+        int winCount = WinningCount;
         var targetSprite = badSprite;
-        if (WinningCount > 0)
+        if (winCount > 0)
         {
             targetSprite = goodSprite;
         }
         GameObject.Find("ScoreGood").GetComponent<RawImage>().texture = targetSprite;
+        //update score text
+        GameObject.Find("ScoreText").GetComponent<Text>().text = "Score: " + winCount;
     }
 
     public void AddPoint(ScoringObject.goalState gs)
