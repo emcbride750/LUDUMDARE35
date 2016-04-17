@@ -8,6 +8,9 @@ using UnityEngine.EventSystems;
 [RequireComponent(typeof(Rigidbody2D))]
 public class PixelCollisionHandler : MonoBehaviour
 {
+	//Is it sticky?
+	public bool sticky = false;
+
     public static string StickyTag = "sticky";
     public static string DissolveTag = "dissolve";
     public static string UnbreakableTag = "unbreakable";
@@ -174,8 +177,8 @@ public class PixelCollisionHandler : MonoBehaviour
         PixelCollisionHandler otherPixel = coll.gameObject.GetComponent<PixelCollisionHandler>();
 
         if ((otherPixel != null) && 
-            (string.Equals(this.gameObject.tag, StickyTag, System.StringComparison.InvariantCultureIgnoreCase) ||
-            string.Equals(otherPixel.tag, StickyTag, System.StringComparison.InvariantCultureIgnoreCase))
+            this.sticky ||
+            otherPixel.sticky
             ){
             AddJoint(otherPixel);
         } else if (string.Equals(coll.gameObject.tag, DissolveTag,System.StringComparison.InvariantCultureIgnoreCase) &&
