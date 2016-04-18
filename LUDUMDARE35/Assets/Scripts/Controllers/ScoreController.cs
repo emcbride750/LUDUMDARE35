@@ -18,6 +18,9 @@ public class ScoreController : MonoBehaviour, IScoreEvent
     public Texture goodSprite;
     public Texture badSprite;
 
+	//Did we win
+	public bool canWin = false;
+
     //Track global counts
     private Dictionary<ScoringObject.goalState, int> counts = new Dictionary<ScoringObject.goalState, int>();
 
@@ -34,7 +37,8 @@ public class ScoreController : MonoBehaviour, IScoreEvent
         //update image
         int winCount = WinningCount;
         var targetSprite = badSprite;
-        if (winCount > 0)
+		this.canWin = winCount > 0;
+        if (this.canWin)
         {
             targetSprite = goodSprite;
         }
